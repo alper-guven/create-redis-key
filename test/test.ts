@@ -1,9 +1,10 @@
 import assert from 'assert';
+import { createRedisKey } from '../src';
 
 describe('Create Redis Key', function () {
-  describe('#indexOf()', function () {
-    it('should return -1 when the value is not present', function () {
-      assert.equal([1, 2, 3].indexOf(4), -1);
+  describe('placeholder', function () {
+    it('should return Create Redis Key', function () {
+      assert.equal(createRedisKey(), 'Create Redis Key');
     });
   });
 });
