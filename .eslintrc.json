@@ -1,11 +1,12 @@
 {
-  "root": true,
-  "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended"
-  ],
-  "rules": {
-    "eqeqeq": ["error", "always", { "null": "ignore" }]
-  }
+	"root": true,
+	"extends": [
+		"eslint:recommended",
+		"plugin:@typescript-eslint/eslint-recommended",
+		"plugin:@typescript-eslint/recommended"
+	],
+	"rules": {
+		"eqeqeq": ["error", "always", { "null": "ignore" }],
+		"no-console": "error"
+	}
 }

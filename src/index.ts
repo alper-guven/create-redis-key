@@ -59,15 +59,10 @@ export const createRedisKey = <T extends string>(
 	 * Replace params in template string with values.
 	 */
 
-	console.log(redisKeyTemplateString);
 	for (const [paramName, paramValue] of Object.entries(params)) {
-		console.log(paramName, paramValue);
-
 		if (typeof paramValue === 'string') {
 			newString = newString.replace(`%${paramName}%`, paramValue);
 		}
-
-		console.log(newString);
 	}
 
 	return newString;
@@ -159,12 +154,11 @@ const createTemplateScope = (
 		}
 	}
 
-	console.log(scopeTemplate);
-
 	return scopeTemplate;
 };
 
 export const createRedisKeysMap = <
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	T extends Record<string, any>,
 	Delimiter extends string = ':'
 >(
