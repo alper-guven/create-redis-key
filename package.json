@@ -7,6 +7,8 @@
     "lint": "eslint ./src",
     "test": "ts-mocha test/*.ts",
     "build": "npm run lint && rimraf ./dist && tsc",
+    "start": "npm run build && node dist/index.js",
+    "dev": "nodemon",
     "preversion": "npm test",
     "version": "npm run build && git add -A dist",
     "postversion": "git push && git push --tags",
@@ -33,6 +35,7 @@
     "@typescript-eslint/eslint-plugin": "^5.33.1",
     "eslint": "^8.22.0",
     "mocha": "^10.0.0",
+    "nodemon": "^2.0.19",
     "rimraf": "^3.0.2",
     "ts-mocha": "^10.0.0",
     "typescript": "^4.7.4"
