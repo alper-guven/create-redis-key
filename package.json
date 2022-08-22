@@ -9,7 +9,7 @@
     "build": "npm run lint && rimraf ./dist && tsc",
     "start": "npm run build && node dist/index.js",
     "dev": "nodemon",
-    "preversion": "npm test",
+    "preversion": "npm run test",
     "version": "npm run build && git add -A dist",
     "postversion": "git push && git push --tags",
     "prepublishOnly": "npm run test"
