@@ -13,7 +13,14 @@ import {
 	RedisKeyParam,
 } from './crk-redis-key-config';
 
-// * Foundation for creating a template string for a redis key.
+/**
+ * ! CAUTION:
+ * ! Do not remove any export statement on types.
+ * ! Otherwise typescript will give an error.
+ * ! Or even worse, it will crash TypeScript Server.
+ */
+
+// * Convert Redis Keys Config (readonly) to Redis Key Template Map
 export type ScopeToKeys<
 	T extends Record<string, any>,
 	X extends Record<string, any> = T,
@@ -30,7 +37,7 @@ export type ScopeToKeys<
 							X,
 							`${AggregatedPath extends '' ? '' : `${AggregatedPath}.`}${K}`
 					  >
-					: RedisKeyTemplateString_FromPath2<
+					: RedisKeyTemplateString_FromPath__Main<
 							X,
 							`${AggregatedPath extends '' ? '' : `${AggregatedPath}.`}${K}`
 					  >
@@ -38,12 +45,8 @@ export type ScopeToKeys<
 	  }
 	: never;
 
-// * Works
-/**
- * ! Only used in this file BUT do not remove export statement.
- * ! Otherwise typescript will give an error.
- */
-export type RedisKeyTemplateString_FromPath2<
+// * Create a template string by taking a Redis Keys Config object and a path.
+export type RedisKeyTemplateString_FromPath__Main<
 	KeyRegistry extends Record<string, any>,
 	Path extends string
 > = KeyRegistry['SCOPE_FIRST_PART'] extends readonly any[]
@@ -51,18 +54,18 @@ export type RedisKeyTemplateString_FromPath2<
 			? ''
 			: `${JoinStringArray<
 					KeyRegistry['SCOPE_FIRST_PART']
-			  >}:`}${RedisKeyTemplateString_FromPath1<KeyRegistry, Path>}`
+			  >}:`}${RedisKeyTemplateString_FromPath__FromScope<KeyRegistry, Path>}`
 	: never;
 
-// * Works
-export type RedisKeyTemplateString_FromPath1<
+// * Create a template string by taking a Config Scope object and a path.
+export type RedisKeyTemplateString_FromPath__FromScope<
 	KeyRegistry extends Record<string, any>,
 	Path extends string,
 	PathFirst_ObjType = TypeOfPathObject<KeyRegistry, Path_GetFirstPart<Path>>
 > = PathFirst_ObjType extends 'scope'
 	? `${Join_RedisKeyTemplateArray<
 			KeyRegistry[Path_GetFirstPart<Path>]['SCOPE_FIRST_PART']
-	  >}:${RedisKeyTemplateString_FromPath1<
+	  >}:${RedisKeyTemplateString_FromPath__FromScope<
 			KeyRegistry[Path_GetFirstPart<Path>],
 			Path_GetRest<Path>
 	  >}`
@@ -70,14 +73,17 @@ export type RedisKeyTemplateString_FromPath1<
 	? `${Join_RedisKeyTemplateArray<KeyRegistry[Path_GetFirstPart<Path>]>}`
 	: never;
 
-// * Works
+/**
+ * * Join a Redis KeyTemplate Array (Array<string | RedisKeyParam>) into a string.
+ * * This is used to create a Redis Key Template String.
+ */
 export type Join_RedisKeyTemplateArray<
 	arr extends readonly RedisKeyTemplateArrayElements[]
 > = arr['length'] extends 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
 	? `${JoinStringArrayMax10<RedisKeyTemplateArray_ToStringArray<arr, 10>>}`
 	: never;
 
-// * Works
+// * Converts a Redis Key Template Array (Array<string | RedisKeyParam>) to a string array.
 export type RedisKeyTemplateArray_ToStringArray<
 	T extends readonly RedisKeyTemplateArrayElements[],
 	D extends Prev[number] = 4
@@ -94,7 +100,7 @@ export type RedisKeyTemplateArray_ToStringArray<
 		: never
 	: never;
 
-// * Works
+// * Get all but the first element of an array.
 export type TailOfArray<T extends readonly RedisKeyTemplateArrayElements[]> =
 	T extends readonly RedisKeyTemplateArrayElements[]
 		? T extends readonly [infer _First, ...infer Rest]
@@ -102,7 +108,7 @@ export type TailOfArray<T extends readonly RedisKeyTemplateArrayElements[]> =
 			: []
 		: [];
 
-// * Works
+// * Converts Redis Key Param or string to string literal.
 export type makeString_StringOrRedisKeyParam<T extends string | RedisKeyParam> =
 	T extends string
 		? `${T}`
@@ -110,7 +116,7 @@ export type makeString_StringOrRedisKeyParam<T extends string | RedisKeyParam> =
 		? `%${T['name']}%`
 		: never;
 
-// * Works
+// * Determines if the object at the path is <scope | leaf | scope-first-part | undefined>
 export type TypeOfPathObject<obj, path extends string> = path extends keyof obj
 	? path extends 'SCOPE_FIRST_PART'
 		? 'scope-first-part'

@@ -2,6 +2,8 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 import { DeepMutable } from '../object-utils';
 
+// * Template array elements
+
 export type RedisKeyParam<Name extends string = string> = {
 	name: Name;
 };
@@ -9,6 +11,8 @@ export type RedisKeyParam<Name extends string = string> = {
 export type RedisKeyTemplateArrayElements = string | RedisKeyParam;
 
 export type RedisKeyTemplateArray = Array<string | RedisKeyParam>;
+
+// * Redis Key Config
 
 export type RedisKeyScope = {
 	SCOPE_FIRST_PART: RedisKeyTemplateArray;
@@ -19,9 +23,13 @@ export type ScopeOrKeyTemplate = RedisKeyTemplateArray | RedisKeyScope;
 
 export type RedisKeysConfig = RedisKeyScope;
 
+// * Redis Key Config mapped to Redis Key Template String map
+
 export type RedisKeyTemplateScope = {
 	[key: string]: string | Record<string, string | RedisKeyTemplateScope>;
 };
+
+// * Redis Key Config validation types
 
 export type IsValidRedisKeysConfig2<T> = DeepMutable<T> extends RedisKeysConfig
 	? true
