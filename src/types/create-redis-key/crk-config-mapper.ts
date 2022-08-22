@@ -7,27 +7,13 @@ import {
 	JoinStringArray,
 	JoinStringArrayMax10,
 	Prev,
-} from './object-utils';
+} from '../object-utils';
+import {
+	RedisKeyTemplateArrayElements,
+	RedisKeyParam,
+} from './crk-redis-key-config';
 
-export type RedisKeyParam<Name extends string = string> = {
-	name: Name;
-	validator?: (value: string | RegExp) => boolean;
-};
-
-export type RedisKeyTemplateArrayElements = string | RedisKeyParam;
-
-export type RedisKeyTemplateArray = Array<string | RedisKeyParam>;
-
-export type RedisKeyScope = {
-	SCOPE_FIRST_PART: RedisKeyTemplateArray;
-	[key: string]: ScopeOrKeyTemplate;
-};
-
-export type ScopeOrKeyTemplate = RedisKeyTemplateArray | RedisKeyScope;
-
-export type RedisKeyTemplateString<T extends string> = T;
-
-// !!!!!!!!!!!!!
+// * Foundation for creating a template string for a redis key.
 export type ScopeToKeys<
 	T extends Record<string, any>,
 	X extends Record<string, any> = T,
@@ -44,7 +30,7 @@ export type ScopeToKeys<
 							X,
 							`${AggregatedPath extends '' ? '' : `${AggregatedPath}.`}${K}`
 					  >
-					: RedisKeyTemplateFromPath2<
+					: RedisKeyTemplateString_FromPath2<
 							X,
 							`${AggregatedPath extends '' ? '' : `${AggregatedPath}.`}${K}`
 					  >
@@ -53,37 +39,11 @@ export type ScopeToKeys<
 	: never;
 
 // * Works
-export type getRedisKeyParamsFromTemplateString<
-	T extends string,
-	_D extends number = 10
-> = T extends `${string}%${infer ParamName}%${infer Rest}`
-	? [ParamName, ...getRedisKeyParamsFromTemplateString<Rest>]
-	: [];
-export type getRequiredParamsFromTemplateString<T extends string> =
-	T extends `${string}%${infer _ParamName}%${infer _Rest}`
-		? {
-				[K in getRedisKeyParamsFromTemplateString<T>[number]]: string;
-		  }
-		: null;
-
-// * Works
-export type RedisKeyTemplateFromPath1<
-	KeyRegistry extends Record<string, any>,
-	Path extends string,
-	PathFirst_ObjType = TypeOfPathObject<KeyRegistry, Path_GetFirstPart<Path>>
-> = PathFirst_ObjType extends 'scope'
-	? `${JoinKeyTemplate<
-			KeyRegistry[Path_GetFirstPart<Path>]['SCOPE_FIRST_PART']
-	  >}:${RedisKeyTemplateFromPath1<
-			KeyRegistry[Path_GetFirstPart<Path>],
-			Path_GetRest<Path>
-	  >}`
-	: PathFirst_ObjType extends 'leaf'
-	? `${JoinKeyTemplate<KeyRegistry[Path_GetFirstPart<Path>]>}`
-	: never;
-
-// * Works
-export type RedisKeyTemplateFromPath2<
+/**
+ * ! Only used in this file BUT do not remove export statement.
+ * ! Otherwise typescript will give an error.
+ */
+export type RedisKeyTemplateString_FromPath2<
 	KeyRegistry extends Record<string, any>,
 	Path extends string
 > = KeyRegistry['SCOPE_FIRST_PART'] extends readonly any[]
@@ -91,22 +51,34 @@ export type RedisKeyTemplateFromPath2<
 			? ''
 			: `${JoinStringArray<
 					KeyRegistry['SCOPE_FIRST_PART']
-			  >}:`}${RedisKeyTemplateFromPath1<KeyRegistry, Path>}`
+			  >}:`}${RedisKeyTemplateString_FromPath1<KeyRegistry, Path>}`
 	: never;
 
-export type JoinKeyTemplate<
+// * Works
+export type RedisKeyTemplateString_FromPath1<
+	KeyRegistry extends Record<string, any>,
+	Path extends string,
+	PathFirst_ObjType = TypeOfPathObject<KeyRegistry, Path_GetFirstPart<Path>>
+> = PathFirst_ObjType extends 'scope'
+	? `${Join_RedisKeyTemplateArray<
+			KeyRegistry[Path_GetFirstPart<Path>]['SCOPE_FIRST_PART']
+	  >}:${RedisKeyTemplateString_FromPath1<
+			KeyRegistry[Path_GetFirstPart<Path>],
+			Path_GetRest<Path>
+	  >}`
+	: PathFirst_ObjType extends 'leaf'
+	? `${Join_RedisKeyTemplateArray<KeyRegistry[Path_GetFirstPart<Path>]>}`
+	: never;
+
+// * Works
+export type Join_RedisKeyTemplateArray<
 	arr extends readonly RedisKeyTemplateArrayElements[]
 > = arr['length'] extends 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
-	? `${JoinStringArrayMax10<StringArrayify<arr, 10>>}`
+	? `${JoinStringArrayMax10<RedisKeyTemplateArray_ToStringArray<arr, 10>>}`
 	: never;
 
 // * Works
-export type GetRedisKeyParamName<T> = T extends RedisKeyParam<infer Name>
-	? Name
-	: never;
-
-// * Works
-export type StringArrayify<
+export type RedisKeyTemplateArray_ToStringArray<
 	T extends readonly RedisKeyTemplateArrayElements[],
 	D extends Prev[number] = 4
 > = [D] extends [never]
@@ -117,7 +89,7 @@ export type StringArrayify<
 		: T['length'] extends 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
 		? readonly [
 				makeString_StringOrRedisKeyParam<T[0]>,
-				...StringArrayify<TailOfArray<T>>
+				...RedisKeyTemplateArray_ToStringArray<TailOfArray<T>>
 		  ]
 		: never
 	: never;
@@ -129,6 +101,7 @@ export type TailOfArray<T extends readonly RedisKeyTemplateArrayElements[]> =
 			? Rest
 			: []
 		: [];
+
 // * Works
 export type makeString_StringOrRedisKeyParam<T extends string | RedisKeyParam> =
 	T extends string

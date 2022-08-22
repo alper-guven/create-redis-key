@@ -237,3 +237,7 @@ export type Leaves1<T, D extends number = 10> = [D] extends [never]
 		? []
 		: { [K in keyof T]-?: Cons1<K, Leaves1<T[K], Prev[D]>> }[keyof T]
 	: [];
+
+export type DeepMutable<T> = {
+	-readonly [k in keyof T]: DeepMutable<T[k]>;
+};
