@@ -25,8 +25,8 @@ export type RedisKeysConfig = RedisKeyScope;
 
 // * Redis Key Config mapped to Redis Key Template String map
 
-export type RedisKeyTemplateScope = {
-	[key: string]: string | Record<string, string | RedisKeyTemplateScope>;
+export type RedisKeyTemplatesMapScope = {
+	[key: string]: string | Record<string, string | RedisKeyTemplatesMapScope>;
 };
 
 // * Redis Key Config validation types

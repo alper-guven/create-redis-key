@@ -5,7 +5,7 @@ import {
 	RedisKeyParam,
 	RedisKeyScope,
 	RedisKeyTemplateArray,
-	RedisKeyTemplateScope,
+	RedisKeyTemplatesMapScope,
 } from '../types/create-redis-key/crk-redis-key-config';
 import {
 	isRedisKeyParam,
@@ -61,8 +61,8 @@ const createTemplateScope = (
 	parentTemplateString: string | null,
 	scope: RedisKeyScope,
 	delimiter: string
-): RedisKeyTemplateScope => {
-	const scopeTemplate: RedisKeyTemplateScope = {};
+): RedisKeyTemplatesMapScope => {
+	const scopeTemplate: RedisKeyTemplatesMapScope = {};
 
 	const scopeFirstPartString = createTemplateStringFormTemplateArray(
 		scope.SCOPE_FIRST_PART,
@@ -122,7 +122,7 @@ export const createRedisKeysMap = <
 
 	validateRedisKeyConfig(redisKeysConfig);
 
-	const map: RedisKeyTemplateScope = createTemplateScope(
+	const map: RedisKeyTemplatesMapScope = createTemplateScope(
 		null,
 		redisKeysConfig as unknown as RedisKeyScope,
 		delimiter
