@@ -4,6 +4,7 @@ import {
 	createRedisKey,
 	createRedisKeyParam,
 	createRedisKeysMap,
+	RedisKeysConfig,
 } from '../src';
 import { IsReadonlyConfig } from '../src/types/create-redis-key/crk-redis-key-config';
 
@@ -23,6 +24,7 @@ const redisKeysConfig = {
 	users: {
 		SCOPE_FIRST_PART: ['users'],
 		online: ['online'],
+		withActiveOrder: ['with-active-order'],
 		byID: ['by-id', createRedisKeyParam('UserID')],
 	},
 
@@ -40,7 +42,7 @@ const redisKeysConfig = {
 		SCOPE_FIRST_PART: ['orders'],
 		byUser: ['of-user', createRedisKeyParam('UserID')],
 		byCity: {
-			SCOPE_FIRST_PART: [createRedisKeyParam('CityName')],
+			SCOPE_FIRST_PART: ['by-city', createRedisKeyParam('CityName')],
 			byCourier: ['of-courier', createRedisKeyParam('CourierID')],
 		},
 	},
@@ -134,9 +136,49 @@ describe('Create Redis Key', function () {
 				'Delimiter must be a string'
 			);
 		});
+
+		it('should throw error when given an invalid config (invalid prop)', function () {
+			const randomObject = {
+				SCOPE_FIRST_PART: [],
+				asddasd: 'asdasd',
+				asdasd: 'asdasd',
+				asdasd123123: 1,
+			};
+
+			expect(() => {
+				const testRandomObject = createRedisKeysMap(randomObject);
+			}).to.throw('Redis Key Config is not valid');
+		});
+
+		it('should throw error when given an invalid config (no SCOPE_FIRST_PART)', function () {
+			const randomObject = {
+				key1: ['key1'],
+				key2: ['key2'],
+			};
+
+			expect(() => {
+				const testRandomObject = createRedisKeysMap(randomObject);
+			}).to.throw(
+				'Redis Key Config is not valid: Config Object itself is not a valid Redis Key Scope'
+			);
+		});
+
+		it('should throw error when given an invalid config (invalid SCOPE_FIRST_PART)', function () {
+			const randomObject = {
+				SCOPE_FIRST_PART: 1,
+				key1: ['key1'],
+				key2: ['key2'],
+			};
+
+			expect(() => {
+				const testRandomObject = createRedisKeysMap(randomObject);
+			}).to.throw(
+				'Redis Key Config is not valid: Redis Template Array must be an array of strings or Redis Key Param objects'
+			);
+		});
 	});
 
-	describe('Use Config to Create Key (Without Optional Delimiter)', function () {
+	describe('Use Valid Config to Create Key (Without Optional Delimiter)', function () {
 		const redisKeysMap = createRedisKeysMap(redisKeysConfig);
 
 		it('should return key for restaurants by category', function () {
@@ -178,7 +220,7 @@ describe('Create Redis Key', function () {
 		});
 	});
 
-	describe('Use Config to Create Key (With Optional Delimiter)', function () {
+	describe('Use Valid Config to Create Key (With Optional Delimiter)', function () {
 		it('should return key for restaurants by category with given delimiter (.)', function () {
 			const redisKeysMap_WithCustomDelimiter = createRedisKeysMap(
 				redisKeysConfig,

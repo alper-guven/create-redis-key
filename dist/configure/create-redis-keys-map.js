@@ -9,9 +9,7 @@ const createRedisKeyParam = (name) => {
 };
 exports.createRedisKeyParam = createRedisKeyParam;
 const createTemplateStringFormTemplateArray = (templateArray, delimiter) => {
-    if ((0, validators_1.isRedisKeyTemplate)(templateArray) === false) {
-        throw new Error(`Redis Template Array must be an array of strings or RedisKeyParam objects`);
-    }
+    (0, validators_1.validateRedisKeyTemplate)(templateArray);
     const templateString = templateArray
         .map((templateMember) => {
         if ((0, validators_1.isRedisKeyParam)(templateMember)) {
@@ -23,9 +21,7 @@ const createTemplateStringFormTemplateArray = (templateArray, delimiter) => {
     return templateString;
 };
 const createTemplateLeaf = (parentTemplateString, leafKeyTemplateArray, delimiter) => {
-    if ((0, validators_1.isRedisKeyTemplate)(leafKeyTemplateArray) === false) {
-        throw new Error('Invalid leaf key template');
-    }
+    (0, validators_1.validateRedisKeyTemplate)(leafKeyTemplateArray);
     const templateString = createTemplateStringFormTemplateArray(leafKeyTemplateArray, delimiter);
     return [parentTemplateString, templateString].join(delimiter);
 };
@@ -46,7 +42,7 @@ const createTemplateScope = (parentTemplateString, scope, delimiter) => {
         if (Array.isArray(value)) {
             scopeTemplate[key] = createTemplateLeaf(templateString, value, delimiter);
         }
-        else if ((0, validators_1.isScope)(value)) {
+        else if ((0, validators_1.isScopeLike)(value)) {
             scopeTemplate[key] = createTemplateScope(templateString, value, delimiter);
         }
     }

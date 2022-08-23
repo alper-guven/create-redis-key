@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateDelimiter = exports.validateRedisKeyConfig = exports.isValidScope = exports.isScope = exports.isRedisKeyTemplate = exports.isRedisKeyParam = void 0;
+exports.validateDelimiter = exports.validateRedisKeyConfig = exports.validateScope = exports.isValidScope = exports.isScopeLike = exports.validateRedisKeyTemplate = exports.isRedisKeyTemplate = exports.isRedisKeyParam = void 0;
 const isRedisKeyParam = (templateMember) => {
     if (typeof templateMember === 'object' && templateMember.name) {
         return true;
@@ -16,14 +16,20 @@ const isRedisKeyTemplate = (possibleTemplate) => {
         possibleTemplate.every((templateMember) => (0, exports.isRedisKeyParam)(templateMember) || typeof templateMember === 'string'));
 };
 exports.isRedisKeyTemplate = isRedisKeyTemplate;
-const isScope = (possibleScope) => {
+const validateRedisKeyTemplate = (possibleTemplate) => {
+    if ((0, exports.isRedisKeyTemplate)(possibleTemplate) === false) {
+        throw new Error(`Redis Template Array must be an array of strings or Redis Key Param objects`);
+    }
+};
+exports.validateRedisKeyTemplate = validateRedisKeyTemplate;
+const isScopeLike = (possibleScope) => {
     return (possibleScope != null &&
         typeof possibleScope === 'object' &&
-        Object.keys(possibleScope).includes('SCOPE_FIRST_PART') != null);
+        Object.keys(possibleScope).includes('SCOPE_FIRST_PART'));
 };
-exports.isScope = isScope;
+exports.isScopeLike = isScopeLike;
 const isValidScope = (scope) => {
-    if ((0, exports.isScope)(scope)) {
+    if ((0, exports.isScopeLike)(scope)) {
         for (const [key, value] of Object.entries(scope)) {
             if (key === 'SCOPE_FIRST_PART') {
                 if ((0, exports.isRedisKeyTemplate)(value) === false) {
@@ -31,15 +37,14 @@ const isValidScope = (scope) => {
                 }
             }
             else if (Array.isArray(value)) {
-                if (value.every((templateMember) => (0, exports.isRedisKeyParam)(templateMember) ||
-                    typeof templateMember === 'string')) {
+                if ((0, exports.isRedisKeyTemplate)(value)) {
                     continue;
                 }
                 else {
                     return false;
                 }
             }
-            else if ((0, exports.isScope)(value)) {
+            else if ((0, exports.isScopeLike)(value)) {
                 if ((0, exports.isValidScope)(value)) {
                     continue;
                 }
@@ -47,18 +52,62 @@ const isValidScope = (scope) => {
                     return false;
                 }
             }
+            else {
+                return false;
+            }
         }
         return true;
     }
     return false;
 };
 exports.isValidScope = isValidScope;
-const validateRedisKeyConfig = (redisKeyConfig) => {
-    if ((0, exports.isValidScope)(redisKeyConfig)) {
-        return;
+const validateScope = (scope, parentPath) => {
+    try {
+        if ((0, exports.isScopeLike)(scope)) {
+            for (const [key, value] of Object.entries(scope)) {
+                const keyPath = parentPath ? `${parentPath}.${key}` : '';
+                if (key === 'SCOPE_FIRST_PART') {
+                    (0, exports.validateRedisKeyTemplate)(value);
+                }
+                else if (Array.isArray(value)) {
+                    (0, exports.validateRedisKeyTemplate)(value);
+                }
+                else if ((0, exports.isScopeLike)(value)) {
+                    (0, exports.validateScope)(value, keyPath);
+                }
+                else {
+                    throw new Error(`Invalid Redis Key Scope on Path: <${keyPath}>`);
+                }
+            }
+        }
+        else {
+            if (parentPath == null) {
+                throw new Error(`Config Object itself is not a valid Redis Key Scope`);
+            }
+            else {
+                throw new Error(`Invalid Redis Key Scope on Path: <${parentPath}>`);
+            }
+        }
     }
-    else {
-        throw new Error('Redis Key Config is not valid');
+    catch (error) {
+        let message = 'unknown error';
+        if (error instanceof Error) {
+            message = error.message;
+        }
+        throw new Error(message);
+    }
+};
+exports.validateScope = validateScope;
+const validateRedisKeyConfig = (redisKeyConfig) => {
+    try {
+        (0, exports.validateScope)(redisKeyConfig, null);
+    }
+    catch (error) {
+        let message = 'unknown error';
+        if (error instanceof Error) {
+            message = error.message;
+        }
+        throw new Error('Redis Key Config is not valid: ' + message);
     }
 };
 exports.validateRedisKeyConfig = validateRedisKeyConfig;

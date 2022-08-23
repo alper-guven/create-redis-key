@@ -9,8 +9,8 @@ import {
 } from '../types/create-redis-key/crk-redis-key-config';
 import {
 	isRedisKeyParam,
-	isRedisKeyTemplate,
-	isScope,
+	validateRedisKeyTemplate,
+	isScopeLike,
 	validateDelimiter,
 	validateRedisKeyConfig,
 } from './validators';
@@ -27,11 +27,7 @@ const createTemplateStringFormTemplateArray = (
 	templateArray: RedisKeyTemplateArray,
 	delimiter: string
 ): string => {
-	if (isRedisKeyTemplate(templateArray) === false) {
-		throw new Error(
-			`Redis Template Array must be an array of strings or RedisKeyParam objects`
-		);
-	}
+	validateRedisKeyTemplate(templateArray);
 
 	const templateString = templateArray
 		.map((templateMember) => {
@@ -51,9 +47,7 @@ const createTemplateLeaf = (
 	leafKeyTemplateArray: RedisKeyTemplateArray,
 	delimiter: string
 ): string => {
-	if (isRedisKeyTemplate(leafKeyTemplateArray) === false) {
-		throw new Error('Invalid leaf key template');
-	}
+	validateRedisKeyTemplate(leafKeyTemplateArray);
 
 	const templateString = createTemplateStringFormTemplateArray(
 		leafKeyTemplateArray,
@@ -93,7 +87,7 @@ const createTemplateScope = (
 		// is leaf
 		if (Array.isArray(value)) {
 			scopeTemplate[key] = createTemplateLeaf(templateString, value, delimiter);
-		} else if (isScope(value)) {
+		} else if (isScopeLike(value)) {
 			// is scope
 			scopeTemplate[key] = createTemplateScope(
 				templateString,
