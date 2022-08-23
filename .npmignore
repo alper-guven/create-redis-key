@@ -1,4 +1,11 @@
 src/
 test/
 
+.vscode/
+
+.prettierrc
+.nodemon.json
+.gitignore
+.editorconfig
 .eslintrc.json
+tsconfig.json
