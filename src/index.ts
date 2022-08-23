@@ -1,8 +1,8 @@
 // * Export Type Definitions
 export {
-	RedisKeyParam,
-	RedisKeyScope,
-	RedisKeyTemplateArray,
+	RedisKeysConfigParam,
+	RedisKeysConfigScope,
+	RedisKeysConfigTemplateArray,
 	RedisKeysConfig,
 } from './types/create-redis-key/crk-redis-key-config';
 

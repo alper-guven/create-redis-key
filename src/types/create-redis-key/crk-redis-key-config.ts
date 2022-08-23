@@ -4,24 +4,28 @@ import { DeepMutable } from '../object-utils';
 
 // * Template array elements
 
-export type RedisKeyParam<Name extends string = string> = {
+export type RedisKeysConfigParam<Name extends string = string> = {
 	name: Name;
 };
 
-export type RedisKeyTemplateArrayElements = string | RedisKeyParam;
+export type RedisKeysConfigTemplateArrayElements =
+	| string
+	| RedisKeysConfigParam;
 
-export type RedisKeyTemplateArray = Array<string | RedisKeyParam>;
+export type RedisKeysConfigTemplateArray = Array<string | RedisKeysConfigParam>;
 
 // * Redis Key Config
 
-export type RedisKeyScope = {
-	SCOPE_FIRST_PART: RedisKeyTemplateArray;
+export type RedisKeysConfigScope = {
+	SCOPE_FIRST_PART: RedisKeysConfigTemplateArray;
 	[key: string]: ScopeOrKeyTemplate;
 };
 
-export type ScopeOrKeyTemplate = RedisKeyTemplateArray | RedisKeyScope;
+export type ScopeOrKeyTemplate =
+	| RedisKeysConfigTemplateArray
+	| RedisKeysConfigScope;
 
-export type RedisKeysConfig = RedisKeyScope;
+export type RedisKeysConfig = RedisKeysConfigScope;
 
 // * Redis Key Config mapped to Redis Key Template String map
 

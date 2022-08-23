@@ -1,13 +1,13 @@
 import {
-	RedisKeyParam,
-	RedisKeyScope,
-	RedisKeyTemplateArray,
+	RedisKeysConfigParam,
+	RedisKeysConfigScope,
+	RedisKeysConfigTemplateArray,
 	ScopeOrKeyTemplate,
 } from '../types/create-redis-key/crk-redis-key-config';
 
 export const isRedisKeyParam = (
-	templateMember: string | RedisKeyParam
-): templateMember is RedisKeyParam => {
+	templateMember: string | RedisKeysConfigParam
+): templateMember is RedisKeysConfigParam => {
 	if (typeof templateMember === 'object' && templateMember.name) {
 		return true;
 	}
@@ -21,7 +21,7 @@ export const isRedisKeyParam = (
 
 export const isRedisKeyTemplate = (
 	possibleTemplate: ScopeOrKeyTemplate
-): possibleTemplate is RedisKeyTemplateArray => {
+): possibleTemplate is RedisKeysConfigTemplateArray => {
 	return (
 		Array.isArray(possibleTemplate) &&
 		possibleTemplate.every(
@@ -43,7 +43,7 @@ export const validateRedisKeyTemplate = (
 
 export const isScopeLike = (
 	possibleScope: unknown
-): possibleScope is RedisKeyScope => {
+): possibleScope is RedisKeysConfigScope => {
 	return (
 		possibleScope != null &&
 		typeof possibleScope === 'object' &&
@@ -51,7 +51,7 @@ export const isScopeLike = (
 	);
 };
 
-export const isValidScope = (scope: unknown): scope is RedisKeyScope => {
+export const isValidScope = (scope: unknown): scope is RedisKeysConfigScope => {
 	if (isScopeLike(scope)) {
 		for (const [key, value] of Object.entries(scope)) {
 			if (key === 'SCOPE_FIRST_PART') {

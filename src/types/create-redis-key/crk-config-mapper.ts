@@ -7,8 +7,8 @@ import {
 	JoinStringArray,
 } from '../object-utils';
 import {
-	RedisKeyTemplateArrayElements,
-	RedisKeyParam,
+	RedisKeysConfigTemplateArrayElements,
+	RedisKeysConfigParam,
 } from './crk-redis-key-config';
 
 /**
@@ -72,12 +72,12 @@ export type RedisKeyTemplateString_FromPath__FromScope<
  * * This is used to create a Redis Key Template String.
  */
 export type Join_RedisKeyTemplateArray<
-	arr extends readonly RedisKeyTemplateArrayElements[]
+	arr extends readonly RedisKeysConfigTemplateArrayElements[]
 > = `${JoinStringArray<RedisKeyTemplateArray_ToStringArray<arr>>}`;
 
 // * Converts a Redis Key Template Array (Array<string | RedisKeyParam>) to a string array.
 export type RedisKeyTemplateArray_ToStringArray<
-	T extends readonly RedisKeyTemplateArrayElements[]
+	T extends readonly RedisKeysConfigTemplateArrayElements[]
 > = T extends any
 	? TailOfArray<T> extends []
 		? [makeString_StringOrRedisKeyParam<T[0]>]
@@ -88,26 +88,28 @@ export type RedisKeyTemplateArray_ToStringArray<
 	: never;
 
 // * Get all but the first element of an array.
-export type TailOfArray<T extends readonly RedisKeyTemplateArrayElements[]> =
-	T extends readonly RedisKeyTemplateArrayElements[]
-		? T extends readonly [infer _First, ...infer Rest]
-			? Rest
-			: []
-		: [];
+export type TailOfArray<
+	T extends readonly RedisKeysConfigTemplateArrayElements[]
+> = T extends readonly RedisKeysConfigTemplateArrayElements[]
+	? T extends readonly [infer _First, ...infer Rest]
+		? Rest
+		: []
+	: [];
 
 // * Converts Redis Key Param or string to string literal.
-export type makeString_StringOrRedisKeyParam<T extends string | RedisKeyParam> =
-	T extends string
-		? `${T}`
-		: T extends RedisKeyParam
-		? `%${T['name']}%`
-		: never;
+export type makeString_StringOrRedisKeyParam<
+	T extends string | RedisKeysConfigParam
+> = T extends string
+	? `${T}`
+	: T extends RedisKeysConfigParam
+	? `%${T['name']}%`
+	: never;
 
 // * Determines if the object at the path is <scope | leaf | scope-first-part | undefined>
 export type TypeOfPathObject<obj, path extends string> = path extends keyof obj
 	? path extends 'SCOPE_FIRST_PART'
 		? 'scope-first-part'
-		: obj[path] extends readonly RedisKeyTemplateArrayElements[]
+		: obj[path] extends readonly RedisKeysConfigTemplateArrayElements[]
 		? 'leaf'
 		: 'scope'
 	: 'not-key';

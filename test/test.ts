@@ -10,6 +10,9 @@ import { IsReadonlyConfig } from '../src/types/create-redis-key/crk-redis-key-co
 
 const redisKeysConfig = {
 	SCOPE_FIRST_PART: [],
+
+	appStatus: ['app-status'],
+
 	restaurants: {
 		SCOPE_FIRST_PART: ['RESTAURANTS'],
 		byCategory: ['by-category', createRedisKeyParam('CategoryID')],
@@ -117,7 +120,7 @@ describe('Create Redis Key', function () {
 		});
 	});
 
-	describe('Config Creation', function () {
+	describe('Redis Keys Templates Map Creation', function () {
 		it('should throw error when given an empty string as delimiter', function () {
 			expect(() => createRedisKeysMap(redisKeysConfig, '')).to.throw(
 				'Delimiter cannot be empty string'
@@ -180,6 +183,10 @@ describe('Create Redis Key', function () {
 
 	describe('Use Valid Config to Create Key (Without Optional Delimiter)', function () {
 		const redisKeysMap = createRedisKeysMap(redisKeysConfig);
+
+		it('should return key app-status', function () {
+			assert.equal(createRedisKey(redisKeysMap.appStatus, null), 'app-status');
+		});
 
 		it('should return key for restaurants by category', function () {
 			assert.equal(
