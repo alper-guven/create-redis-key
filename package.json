@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./dist/src/*": null
+  },
   "scripts": {
     "lint": "eslint ./src",
     "test": "ts-mocha test/*.ts",
