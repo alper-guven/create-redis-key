@@ -1,11 +1,19 @@
 # Create Redis Key
 
+A Redis key creation utility.
+
 Create `Redis Key Templates`, which include parameters, using a nested config object & use your `Redis Key Template` strings to create Redis Keys.
 
 > This package heavily uses [Template Literal Types](https://www.typescriptlang.org/docs/handbook/2/template-literal-types.html) which is available since [TypeScript 4.1](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-1.html) so you need at least this version of Typescript for this package to properly work.
 
 | ![npm](https://img.shields.io/npm/dm/create-redis-key?style=for-the-badge) | [![MIT License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](https://choosealicense.com/licenses/mit/) | [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/alperguven) |
 | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+
+## Examples
+
+[See it on action (StackBlitz)](https://stackblitz.com/edit/create-redis-key?file=src/index.ts&view=editor)
+
+Check [How to Use](#usage) section to see explanations of usage options on examples.
 
 ## Sections
 
@@ -336,13 +344,13 @@ createRedisKeysMap(exampleRedisKeysConfig);
 
 It will produce this object which is a `Redis Keys Template Map`:
 
-```javascript
+```json
 {
-	key1: 'a-random-text-1:%Param1%';
-	key2: 'another-text:%Param2%';
-	aNestedScope: {
-		scopedKey1: 'a-nested-scope:%Param3%:a-key-1:%KeyParam%';
-	}
+    key1: "a-random-text-1:%Param1%";
+    key2: "another-text:%Param2%";
+    aNestedScope: {
+        scopedKey1: "a-nested-scope:%Param3%:a-key-1:%KeyParam%";
+    };
 }
 ```
 
@@ -415,13 +423,13 @@ const exampleRedisKeysTemplateMap = createRedisKeysMap(exampleRedisKeysConfig);
 
 It will produce this object which is a `Redis Keys Template Map`:
 
-```javascript
+```json
 {
-	key1: 'a-random-text-1:%Param1%';
-	key2: 'another-text:%Param2%';
-	aNestedScope: {
-		scopedKey1: 'a-nested-scope:%Param3%:a-key-1:%KeyParam%';
-	}
+    key1: "a-random-text-1:%Param1%";
+    key2: "another-text:%Param2%";
+    aNestedScope: {
+        scopedKey1: "a-nested-scope:%Param3%:a-key-1:%KeyParam%";
+    };
 }
 ```
 
@@ -489,7 +497,7 @@ There are some basic rules though.
   - Check [TSD](https://www.npmjs.com/package/tsd) package to see how you can test types.
 - **Write tests for your new feature.**
   - I won't accept any PR without additional tests.
-  - I won't accept any PR if I can't past existing tests.
+  - I won't accept any PR if it can't pass existing tests.
 
 ## Authors
 
