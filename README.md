@@ -83,6 +83,14 @@ import {
 } from 'create-redis-key';
 ```
 
+or using require
+
+```javascript
+var CRK = require('create-redis-key');
+
+const { createRedisKeyParam, createRedisKeysMap, createRedisKey } = CRK;
+```
+
 ### Option 1 (Recommended)
 
 Create a `Redis Keys Config` object.
@@ -135,6 +143,8 @@ const redisKeysConfig = {
 ```
 
 Then create a `Redis Keys Templates Map` using the config:
+
+> If you give an invalid config, return type will be `never`. I explained why it works this way at [FAQ](#faq) section.
 
 ```typescript
 const RedisKeysMap = createRedisKeysMap(exampleRedisKeysConfig);
@@ -204,6 +214,8 @@ const latestOrdersOfCourierInCityRK = createRedisKey(
 
 Instead of creating a `Redis Keys Templates Map` using `createRedisKeysMap()` with a config, you can write it yourself.
 
+> You should write `as const` at the end of the object for things to properly work.
+
 > When you write `Redis Key Templates` manually, be aware that it is much more error prone than using `Option 1`.
 
 ```typescript
@@ -214,7 +226,7 @@ const DeliveryServiceRedisKeyTemplatesMap = {
 	previousDeliveriesOfCourier: 'couriers:by-id:%CourierID%:previous-deliveries',
 	latestOrdersOfCourierInCity:
 		'orders:by-city:%CityName%:of-courier:%CourierID%',
-};
+} as const;
 ```
 
 Then you can use it just like shown on Option 1:
