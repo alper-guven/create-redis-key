@@ -356,13 +356,13 @@ createRedisKeysMap(exampleRedisKeysConfig);
 
 It will produce this object which is a `Redis Keys Template Map`:
 
-```json
+```javascript
 {
-    key1: "a-random-text-1:%Param1%";
-    key2: "another-text:%Param2%";
-    aNestedScope: {
-        scopedKey1: "a-nested-scope:%Param3%:a-key-1:%KeyParam%";
-    };
+	key1: 'a-random-text-1:%Param1%';
+	key2: 'another-text:%Param2%';
+	aNestedScope: {
+		scopedKey1: 'a-nested-scope:%Param3%:a-key-1:%KeyParam%';
+	}
 }
 ```
 
@@ -435,13 +435,13 @@ const exampleRedisKeysTemplateMap = createRedisKeysMap(exampleRedisKeysConfig);
 
 It will produce this object which is a `Redis Keys Template Map`:
 
-```json
+```javascript
 {
-    key1: "a-random-text-1:%Param1%";
-    key2: "another-text:%Param2%";
-    aNestedScope: {
-        scopedKey1: "a-nested-scope:%Param3%:a-key-1:%KeyParam%";
-    };
+	key1: 'a-random-text-1:%Param1%';
+	key2: 'another-text:%Param2%';
+	aNestedScope: {
+		scopedKey1: 'a-nested-scope:%Param3%:a-key-1:%KeyParam%';
+	}
 }
 ```
 
